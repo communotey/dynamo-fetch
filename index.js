@@ -1,41 +1,33 @@
-import {DynamoDB} from 'aws-sdk';
+const AWS = require('aws-sdk');
+const DynamoDB = new AWS.DynamoDB({
+    region: process.env.REGION || 'us-east-1'
+})
 
-exports.handler = function(event, context, callback) {
+exports.handler = async (event) => {
     // TODO: get input values for fetcher
     const inputId = '';
+    const itemKeyName = process.env.ITEM_KEY_NAME || 'ID';
+    const keyObj = {}
+    keyObj[itemKeyName] = {
+        S: inputId
+    }
     var params = {
-        Key: {
-            "ID": {
-                S: inputId
-            }
-        },
-        TableName: serialize(process.env.TableName || "Default")
+        Key: keyObj,
+        TableName: process.env.TABLE_NAME || "Default"
     };
     try {
-        const data = DynamoDB.getItem(params).promise();
-        callback(null, data);
+        const data = await DynamoDB.getItem(params).promise();
+        const loc = data.Item[process.env.ITEM_VALUE_NAME || 'link'].S
+        const response = {
+            statusCode = 301,
+            headers: {
+                Location: loc
+            }
+        }
+        return response;
     } catch (err) {
         console.log(err, err.stack); // an error occurred
+        throw err;
     }
-    /*
-    data = {
-    Item: {
-    "AlbumTitle": {
-        S: "Songs About Life"
-    }, 
-    "Artist": {
-        S: "Acme Band"
-    }, 
-    "SongTitle": {
-        S: "Happy Day"
-    }
-    }
-    }
-    */
-    //
 }
 
-
-var serialize = function(object) {
-    return JSON.stringify(object, null, 2)
-}
