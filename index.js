@@ -5,7 +5,7 @@ const DynamoDB = new AWS.DynamoDB({
 
 exports.handler = async (event) => {
     // TODO: get input values for fetcher
-    const inputId = '';
+    const inputId = event.inputId || event.queryStringParameters && event.queryStringParameters.inputId;
     const itemKeyName = process.env.ITEM_KEY_NAME || 'ID';
     const keyObj = {}
     keyObj[itemKeyName] = {
@@ -19,7 +19,7 @@ exports.handler = async (event) => {
         const data = await DynamoDB.getItem(params).promise();
         const loc = data.Item[process.env.ITEM_VALUE_NAME || 'link'].S
         const response = {
-            statusCode = 301,
+            statusCode: 301,
             headers: {
                 Location: loc
             }
