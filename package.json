@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/communotey/dynamo-fetch#readme",
   "dependencies": {
-    "aws-sdk": "^2.782.0"
+    "aws-sdk": "^2.828.0"
   }
 }
